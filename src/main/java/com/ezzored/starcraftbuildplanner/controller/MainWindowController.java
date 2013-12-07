@@ -8,8 +8,11 @@ package com.ezzored.starcraftbuildplanner.controller;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -103,22 +106,43 @@ public class MainWindowController implements Initializable {
 		filter_name.clear();
 		filter_category.clear();
 		filter_matchup.getSelectionModel().clearSelection();
+		resetTable();
+	}
+	
+	private void resetTable() {
+		buildList.clear();
+		buildList.addAll(buildService.getAll());
+		buildTable.setItems(buildList);
 	}
 
 	@FXML
 	private void btn_filterClick(ActionEvent event) {
+		resetTable();
+		
+		List<Build> filteredList = new ArrayList<Build>(buildList);
+		
+		String filterCategory = filter_category.getText();
+		String filterName = filter_name.getText();
+		String filterMatchup = filter_matchup.getSelectionModel().getSelectedItem();
+		
+		for (Build build : buildList) {
+			
+			if (!filterCategory.isEmpty() && !build.getCategory().contains(filterCategory)) {
+				filteredList.remove(build);
+			}
+			
+			if (!filterName.isEmpty() && !build.getName().contains(filterName)) {
+				filteredList.remove(build);
+			}
+			
+			if (filterMatchup!=null && !build.getMatchup().contains(filterMatchup)) {
+				filteredList.remove(build);
+			}
+		}
 
-		/*
-		 * final JDialog jDialog = new JDialog(); jDialog.setGlassPane(true);
-		 * final JFXPanel fxPanel = new JFXPanel(); Platform.runLater(new
-		 * Runnable() {
-		 * 
-		 * @Override public void run() { HBox hb = new HBox(); Scene sc= new
-		 * Scene(hb); TextField textField = new TextField ();
-		 * textField.setText("ASdasdasd"); hb.getChildren().add(textField);
-		 * fxPanel.setScene(sc); } }); jDialog.add(fxPanel);
-		 * jDialog.setAlwaysOnTop(true); jDialog.setVisible(true);
-		 */
+		buildList.clear();
+		buildList.addAll(filteredList);
+		buildTable.setItems(buildList);
 	}
 
 	@FXML
@@ -150,6 +174,17 @@ public class MainWindowController implements Initializable {
 
 	@FXML
 	private void btn_OverlayClick(ActionEvent event) {
+		/*
+		 * final JDialog jDialog = new JDialog(); jDialog.setGlassPane(true);
+		 * final JFXPanel fxPanel = new JFXPanel(); Platform.runLater(new
+		 * Runnable() {
+		 * 
+		 * @Override public void run() { HBox hb = new HBox(); Scene sc= new
+		 * Scene(hb); TextField textField = new TextField ();
+		 * textField.setText("ASdasdasd"); hb.getChildren().add(textField);
+		 * fxPanel.setScene(sc); } }); jDialog.add(fxPanel);
+		 * jDialog.setAlwaysOnTop(true); jDialog.setVisible(true);
+		 */
 	}
 
 	@FXML
@@ -224,6 +259,7 @@ public class MainWindowController implements Initializable {
 						"matchup"));
 
 		macthupChoiceBox.setItems(matchupList);
+		filter_matchup.setItems(matchupList);
 
 		importExportService = new ImportExportService();
 
