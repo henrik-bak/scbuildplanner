@@ -233,7 +233,7 @@ public class MainWindowController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		try {
-			buildService = new BuildService();
+			buildService = BuildService.getInstance();
 		} catch (SQLException ex) {
 		}
 

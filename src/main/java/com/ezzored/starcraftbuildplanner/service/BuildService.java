@@ -25,10 +25,11 @@ import java.util.logging.Logger;
 public class BuildService {
 
     Dao<Build, Integer> buildDao;
-
-    public BuildService() throws SQLException {
-
-        File path = new File("D:/db/");
+    
+    private static BuildService inst = null;
+    
+    private BuildService() throws SQLException {
+    	File path = new File("D:/db/");
 
         String databaseUrl = "jdbc:h2:file:" + path.getAbsolutePath() + "sc.h2.db";
         // create a connection source to our database
@@ -41,6 +42,15 @@ public class BuildService {
 
         // if you need to create the 'accounts' table make this call
         TableUtils.createTableIfNotExists(connectionSource, Build.class);
+    }
+     
+    public static BuildService getInstance() throws SQLException {
+        synchronized(BuildService.class) {
+            if(inst == null) {
+                inst = new BuildService();
+            }
+        }
+        return inst;
     }
 
     public void save(Build build) {
